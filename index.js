@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const cors = require('cors');
+
 const {
   createPage,
   getPages,
@@ -12,6 +14,22 @@ const {
 
 const app = express();
 app.use(bodyParser.json());
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // origin이 undefined면(서버-서버 통신 등) 허용
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 // ✅ 전체 페이지 조회 (최신순)
 app.get('/pages', async (req, res) => {
