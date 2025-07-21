@@ -26,7 +26,7 @@ async function createPage(title, description, eventDate, imageUrl) {
   });
 }
 
-// ✅ 최신순 전체 페이지 가져오기
+// ✅ 전체 페이지 최신순 조회
 async function getPages() {
   const response = await notion.databases.query({
     database_id: databaseId,
@@ -36,7 +36,7 @@ async function getPages() {
   return response.results;
 }
 
-// ✅ 요약 정보 가져오기
+// ✅ 요약 정보 조회
 async function getPagesSummary() {
   const response = await notion.databases.query({
     database_id: databaseId,
@@ -51,12 +51,12 @@ async function getPagesSummary() {
   });
 }
 
-// ✅ 단일 페이지 상세 정보
+// ✅ 단일 페이지 원본 조회
 async function getPageDetails(pageId) {
   return await notion.pages.retrieve({ page_id: pageId });
 }
 
-// ✅ 본문 텍스트 또는 링크 추출
+// ✅ 본문 텍스트 및 링크만 추출
 async function getPageTextAndLinksOnly(pageId) {
   const response = await notion.blocks.children.list({ block_id: pageId });
   const items = [];
@@ -68,7 +68,6 @@ async function getPageTextAndLinksOnly(pageId) {
         const item = {};
         if (rt.text?.content) item.text = rt.text.content;
         if (rt.text?.link?.url) item.url = rt.text.link.url;
-
         if (Object.keys(item).length > 0) {
           items.push(item);
         }
@@ -79,14 +78,22 @@ async function getPageTextAndLinksOnly(pageId) {
   return items;
 }
 
-// ✅ 간단한 상세 정보 추출 (text 제외)
+// ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
 async function getSimplePageDetails(pageId) {
   const detail = await getPageDetails(pageId);
 
   const title = detail.properties.title?.title[0]?.text?.content || '';
   const description = detail.properties.description?.rich_text[0]?.text?.content || '';
   const eventDate = detail.properties.event_date?.date?.start || null;
-  const image = detail.properties.image?.files[0]?.external?.url || '';
+
+  const imageFile = detail.properties.image?.files?.[0];
+  let image = null;
+
+  if (imageFile?.type === 'external') {
+    image = imageFile.external.url;
+  } else if (imageFile?.type === 'file') {
+    image = imageFile.file.url;
+  }
 
   return { title, description, eventDate, image };
 }

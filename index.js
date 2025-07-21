@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
 
 const {
   createPage,
@@ -15,21 +15,21 @@ const {
 const app = express();
 app.use(bodyParser.json());
 
-// ✅ CORS 설정
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : [];
+// // ✅ CORS 설정
+// const allowedOrigins = process.env.CORS_ORIGIN
+//   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+//   : [];
 
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+// }));
 
 // ✅ 전체 페이지 조회
 app.get('/pages', async (req, res) => {
@@ -42,7 +42,7 @@ app.get('/pages', async (req, res) => {
   }
 });
 
-// ✅ 페이지 요약 조회
+// ✅ 요약 정보 조회
 app.get('/pages/summary', async (req, res) => {
   try {
     const summaries = await getPagesSummary();
@@ -53,7 +53,7 @@ app.get('/pages/summary', async (req, res) => {
   }
 });
 
-// ✅ 페이지 전체 상세 정보 (Notion raw 그대로)
+// ✅ 원본 상세 정보
 app.get('/pages/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -65,7 +65,7 @@ app.get('/pages/:id', async (req, res) => {
   }
 });
 
-// ✅ 본문에서 텍스트와 링크만 추출
+// ✅ 본문 텍스트와 링크만 추출
 app.get('/pages/:id/texts', async (req, res) => {
   const { id } = req.params;
   try {
@@ -77,7 +77,7 @@ app.get('/pages/:id/texts', async (req, res) => {
   }
 });
 
-// ✅ 간단한 상세 정보만 추출 (texts 제외)
+// ✅ 디테일 API (텍스트 제외, 이미지 처리 포함)
 app.get('/pages/:id/details', async (req, res) => {
   const { id } = req.params;
   try {
