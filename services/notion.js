@@ -56,28 +56,70 @@ async function getPageDetails(pageId) {
   return await notion.pages.retrieve({ page_id: pageId });
 }
 
-// ✅ 본문 텍스트 및 링크만 추출
+// 텍스트 및 링크 추출
 async function getPageTextAndLinksOnly(pageId) {
   const response = await notion.blocks.children.list({ block_id: pageId });
   const items = [];
 
   for (const block of response.results) {
+    const item = {};
+
+    // 텍스트 및 하이퍼링크
     const richTextArray = block[block.type]?.rich_text;
     if (Array.isArray(richTextArray)) {
-      for (const rt of richTextArray) {
-        const item = {};
-        if (rt.text?.content) item.text = rt.text.content;
-        if (rt.text?.link?.url) item.url = rt.text.link.url;
-        if (Object.keys(item).length > 0) {
-          items.push(item);
-        }
-      }
+      const texts = richTextArray.map(rt => rt.text?.content).filter(Boolean);
+      const links = richTextArray.map(rt => rt.text?.link?.url).filter(Boolean);
+      if (texts.length > 0) item.texts = texts;
+      if (links.length > 0) item.links = links;
+    }
+
+    // 이미지 블록
+    if (block.type === 'image') {
+      const imageData = block.image;
+      const imageUrl = imageData?.type === 'external'
+        ? imageData.external.url
+        : imageData?.type === 'file'
+        ? imageData.file.url
+        : null;
+      if (imageUrl) item.image = imageUrl;
+    }
+
+    // 임베디드 블록
+    if (block.type === 'embed') {
+      const embedUrl = block.embed?.url;
+      if (embedUrl) item.embed = embedUrl;
+    }
+
+    // 비디오 블록
+    if (block.type === 'video') {
+      const videoData = block.video;
+      const videoUrl = videoData?.type === 'external'
+        ? videoData.external.url
+        : videoData?.type === 'file'
+        ? videoData.file.url
+        : null;
+      if (videoUrl) item.video = videoUrl;
+    }
+
+    // 파일 블록
+    if (block.type === 'file') {
+      const fileData = block.file;
+      const fileUrl = fileData?.type === 'external'
+        ? fileData.external.url
+        : fileData?.type === 'file'
+        ? fileData.file.url
+        : null;
+      if (fileUrl) item.file = fileUrl;
+    }
+
+    // 유효한 데이터가 있을 경우에만 배열에 추가
+    if (Object.keys(item).length > 0) {
+      items.push(item);
     }
   }
 
   return items;
 }
-
 // ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
 async function getSimplePageDetails(pageId) {
   const detail = await getPageDetails(pageId);
