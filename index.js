@@ -18,8 +18,7 @@ app.use(bodyParser.json());
 // ✅ CORS 설정
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : [];
-
+  : []
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -42,7 +41,7 @@ app.get('/pages', async (req, res) => {
   }
 });
 
-// ✅ 요약 정보 조회
+// ✅ 페이지 요약 조회
 app.get('/pages/summary', async (req, res) => {
   try {
     const summaries = await getPagesSummary();
@@ -53,7 +52,7 @@ app.get('/pages/summary', async (req, res) => {
   }
 });
 
-// ✅ 원본 상세 정보
+// ✅ Notion raw 전체 상세 정보
 app.get('/pages/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -65,7 +64,7 @@ app.get('/pages/:id', async (req, res) => {
   }
 });
 
-// ✅ 본문 텍스트와 링크만 추출
+// ✅ 본문 텍스트/링크만 추출
 app.get('/pages/:id/texts', async (req, res) => {
   const { id } = req.params;
   try {
@@ -77,7 +76,7 @@ app.get('/pages/:id/texts', async (req, res) => {
   }
 });
 
-// ✅ 디테일 API (텍스트 제외, 이미지 처리 포함)
+// ✅ 간단 상세 정보 반환 (/details)
 app.get('/pages/:id/details', async (req, res) => {
   const { id } = req.params;
   try {
