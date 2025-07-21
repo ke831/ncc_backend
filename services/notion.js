@@ -36,7 +36,7 @@ async function getPages() {
   return response.results;
 }
 
-// ✅ 요약 정보 가져오기 (title, event_date, pageId)
+// ✅ 요약 정보 가져오기
 async function getPagesSummary() {
   const response = await notion.databases.query({
     database_id: databaseId,
@@ -56,7 +56,7 @@ async function getPageDetails(pageId) {
   return await notion.pages.retrieve({ page_id: pageId });
 }
 
-// ✅ 본문 텍스트 또는 URL만 추출 (둘 중 하나만 있어도 해당 값만 반환)
+// ✅ 본문 텍스트 또는 링크 추출
 async function getPageTextAndLinksOnly(pageId) {
   const response = await notion.blocks.children.list({ block_id: pageId });
   const items = [];
@@ -79,10 +79,23 @@ async function getPageTextAndLinksOnly(pageId) {
   return items;
 }
 
+// ✅ 간단한 상세 정보 추출 (text 제외)
+async function getSimplePageDetails(pageId) {
+  const detail = await getPageDetails(pageId);
+
+  const title = detail.properties.title?.title[0]?.text?.content || '';
+  const description = detail.properties.description?.rich_text[0]?.text?.content || '';
+  const eventDate = detail.properties.event_date?.date?.start || null;
+  const image = detail.properties.image?.files[0]?.external?.url || '';
+
+  return { title, description, eventDate, image };
+}
+
 module.exports = {
   createPage,
   getPages,
   getPagesSummary,
   getPageDetails,
-  getPageTextAndLinksOnly
+  getPageTextAndLinksOnly,
+  getSimplePageDetails
 };

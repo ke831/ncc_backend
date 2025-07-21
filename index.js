@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const cors = require('cors');
 
 const {
@@ -9,19 +8,20 @@ const {
   getPages,
   getPagesSummary,
   getPageDetails,
-  getPageTextAndLinksOnly
+  getPageTextAndLinksOnly,
+  getSimplePageDetails
 } = require('./services/notion');
 
 const app = express();
 app.use(bodyParser.json());
 
+// ✅ CORS 설정
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
   : [];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // origin이 undefined면(서버-서버 통신 등) 허용
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -31,7 +31,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ 전체 페이지 조회 (최신순)
+// ✅ 전체 페이지 조회
 app.get('/pages', async (req, res) => {
   try {
     const pages = await getPages();
@@ -42,7 +42,7 @@ app.get('/pages', async (req, res) => {
   }
 });
 
-// ✅ 페이지 요약 정보 조회
+// ✅ 페이지 요약 조회
 app.get('/pages/summary', async (req, res) => {
   try {
     const summaries = await getPagesSummary();
@@ -53,7 +53,7 @@ app.get('/pages/summary', async (req, res) => {
   }
 });
 
-// ✅ 단일 페이지 상세 정보
+// ✅ 페이지 전체 상세 정보 (Notion raw 그대로)
 app.get('/pages/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -65,7 +65,7 @@ app.get('/pages/:id', async (req, res) => {
   }
 });
 
-// ✅ 본문 텍스트 또는 하이퍼링크 URL만 추출
+// ✅ 본문에서 텍스트와 링크만 추출
 app.get('/pages/:id/texts', async (req, res) => {
   const { id } = req.params;
   try {
@@ -73,6 +73,18 @@ app.get('/pages/:id/texts', async (req, res) => {
     res.json(content);
   } catch (error) {
     console.error('텍스트/링크 추출 오류:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ✅ 간단한 상세 정보만 추출 (texts 제외)
+app.get('/pages/:id/details', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const detail = await getSimplePageDetails(id);
+    res.json(detail);
+  } catch (error) {
+    console.error('간단 상세 정보 오류:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -89,6 +101,6 @@ app.post('/pages', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('🚀 서버가 3000번 포트에서 실행 중입니다');
+app.listen(4000, () => {
+  console.log('🚀 서버가 4000번 포트에서 실행 중입니다');
 });
