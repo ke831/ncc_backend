@@ -1,0 +1,17 @@
+{
+  "name": "ncc_back",
+  "version": "1.0.0",
+  "description": "### 서버리스 ### 이유 : 개발자가 부족하고 실사용에도 관리할 인원이 없고 프로젝트 크기가 작아서서 선택",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@notionhq/client": "^4.0.1",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0"
+  }
+}
