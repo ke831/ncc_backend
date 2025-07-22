@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const serverless = require('serverless-http');
 
 const {
   createPage,
@@ -10,7 +11,7 @@ const {
   getPageDetails,
   getPageTextAndLinksOnly,
   getSimplePageDetails
-} = require('./services/notion');
+} = require('../services/notion'); // ← 경로 주의!
 
 const app = express();
 app.use(bodyParser.json());
@@ -18,7 +19,7 @@ app.use(bodyParser.json());
 // ✅ CORS 설정
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : []
+  : [];
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -100,6 +101,5 @@ app.post('/pages', async (req, res) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log('🚀 서버가 4000번 포트에서 실행 중입니다');
-});
+// 🚫 app.listen은 제거!
+module.exports = serverless(app);
