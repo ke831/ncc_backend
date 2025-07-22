@@ -101,5 +101,11 @@ app.post('/pages', async (req, res) => {
   }
 });
 
-// 🚫 app.listen은 제거!
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`🚀 서버가 ${PORT}번 포트에서 실행 중입니다`);
+  });
+}
+
 module.exports = serverless(app);
