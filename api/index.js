@@ -15,6 +15,10 @@ const {
 const app = express();
 app.use(bodyParser.json());
 
+console.log(process.env.CORS_ORIGIN);
+console.log(process.env.NOTION_TOKEN);
+console.log(process.env.NOTION_DATABASE_ID);
+
 // ✅ CORS 설정
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
