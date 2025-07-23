@@ -7,25 +7,6 @@ const notion = new Client({
 
 const databaseId = process.env.NOTION_DATABASE_ID;
 
-// ✅ 새 페이지 생성
-async function createPage(title, description, eventDate, imageUrl) {
-  return await notion.pages.create({
-    parent: { database_id: databaseId },
-    properties: {
-      title: { title: [{ text: { content: title } }] },
-      description: { rich_text: [{ text: { content: description } }] },
-      event_date: { date: { start: eventDate } },
-      image: {
-        files: [{
-          name: "업로드 이미지",
-          type: "external",
-          external: { url: imageUrl }
-        }]
-      }
-    }
-  });
-}
-
 // ✅ 전체 페이지 최신순 조회
 async function getPages() {
   const response = await notion.databases.query({
@@ -141,7 +122,6 @@ async function getSimplePageDetails(pageId) {
 }
 
 module.exports = {
-  createPage,
   getPages,
   getPagesSummary,
   getPageDetails,

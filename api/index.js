@@ -5,7 +5,6 @@ const cors = require('cors');
 const serverless = require('serverless-http');
 
 const {
-  createPage,
   getPages,
   getPagesSummary,
   getPageDetails,
@@ -90,23 +89,5 @@ app.get('/pages/:id/details', async (req, res) => {
   }
 });
 
-// ✅ 새 페이지 생성
-app.post('/pages', async (req, res) => {
-  const { title, description, eventDate, imageUrl } = req.body;
-  try {
-    const result = await createPage(title, description, eventDate, imageUrl);
-    res.json(result);
-  } catch (error) {
-    console.error('페이지 생성 오류:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-if (require.main === module) {
-  const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => {
-    console.log(`🚀 서버가 ${PORT}번 포트에서 실행 중입니다`);
-  });
-}
 
 module.exports = serverless(app);
