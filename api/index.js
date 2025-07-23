@@ -22,6 +22,7 @@ const allowedOrigins = process.env.CORS_ORIGIN
   : [];
 app.use(cors({
   origin: function(origin, callback) {
+    console.log('CORS 요청 Origin:', origin); // ← 이 줄 추가!
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
