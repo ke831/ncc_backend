@@ -19,6 +19,10 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   const start = Date.now();
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} 요청 시작`);
+  console.log(`[Express] req.url: ${req.url}`);
+  console.log(`[Express] req.originalUrl: ${req.originalUrl}`);
+  console.log(`[Express] req.baseUrl: ${req.baseUrl}`);
+  console.log(`[Express] req.path: ${req.path}`);
   
   res.on('finish', () => {
     const duration = Date.now() - start;
