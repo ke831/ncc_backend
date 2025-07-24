@@ -83,7 +83,9 @@ async function getPages() {
 // ✅ 요약 정보 조회
 async function getPagesSummary(topic) {
   const databaseId = getDatabaseId(topic);
-  console.log('[notion.js] getPagesSummary databaseId:', databaseId);
+  console.log('topic:', topic);
+  console.log('NOTION_DATABASE_ID_NEWS:', process.env.NOTION_DATABASE_ID_NEWS);
+  console.log('NOTION_DATABASE_ID_EVENTS:', process.env.NOTION_DATABASE_ID_EVENTS);
   logEnvAndEntry('getPagesSummary');
   const t0 = Date.now();
   try {
