@@ -10,8 +10,10 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const pageId = req.query[0];
+
   try {
-    const summaries = await getPagesSummary();
+    const summaries = await getPageDetails(pageId);
     res.status(200).json(summaries);
   } catch (error) {
     res.status(500).json({ error: error.message });
