@@ -6,6 +6,7 @@ const notion = new Client({
 });
 
 function getDatabaseId(topic) {
+  console.log('[notion.js] getDatabaseId topic:', topic, '|', typeof topic, '|', JSON.stringify(topic));
   switch (topic) {
     case 'news':
       return process.env.NOTION_DATABASE_ID_NEWS;
@@ -204,6 +205,7 @@ async function getPageTextAndLinksOnly(topic, pageId) {
 }
 // ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
 async function getSimplePageDetails(topic, pageId) {
+  console.log('[notion.js] getSimplePageDetails topic:', topic);
   const databaseId = getDatabaseId(topic);
   console.log('topic:', topic);
   console.log('databaseId:', databaseId);
