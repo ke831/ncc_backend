@@ -10,8 +10,8 @@ function getDatabaseId(topic) {
   switch (topic) {
     case 'news':
       return process.env.NOTION_DATABASE_ID_NEWS;
-    case 'weekly-bulletin':``
-      return process.env.NOTION_DATABASE_ID_EVENTS;
+    case 'weekly-bulletin':
+      return process.env.NOTION_DATABASE_ID_BULLETIN;
     default:
       throw new Error('Unknown topic');
   }
