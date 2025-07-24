@@ -2,7 +2,7 @@ const { getPagesSummary } = require('../services/notion');
 
 module.exports = async (req, res) => {
   // CORS 헤더 추가 (필요하다면)
-  res.setHeader('Access-Control-Allow-Origin', 'https://ncc-front.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', 'https://saechuncheon.com');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') {
