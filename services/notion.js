@@ -6,7 +6,6 @@ const notion = new Client({
 });
 
 function getDatabaseId(topic) {
-  console.log('[notion.js] getDatabaseId topic:', topic, '|', typeof topic, '|', JSON.stringify(topic));
   switch (topic) {
     case 'news':
       return process.env.NOTION_DATABASE_ID_NEWS;
@@ -18,20 +17,7 @@ function getDatabaseId(topic) {
 }
 
 
-
-
-function logEnvAndEntry(fnName, args) {
-  console.log(`[notion.js] 함수 진입: ${fnName}`);
-  if (args) console.log(`[notion.js] 인자:`, args);
-  console.log('[notion.js] NOTION_TOKEN:', process.env.NOTION_TOKEN ? process.env.NOTION_TOKEN.slice(0,4) + '...' : undefined);
-}
-function logTime(label, start) {
-  const end = Date.now();
-  console.log(`[notion.js] ${label} - 경과(ms):`, end - start);
-}
-
 async function createPage(title, description, eventDate, imageUrl) {
-  logEnvAndEntry('createPage', { title, description, eventDate, imageUrl });
   const t0 = Date.now();
   try {
     const payload = {
@@ -49,10 +35,7 @@ async function createPage(title, description, eventDate, imageUrl) {
         }
       }
     };
-    console.log('[notion.js] createPage payload:', JSON.stringify(payload));
     const result = await notion.pages.create(payload);
-    logTime('createPage Notion API', t0);
-    console.log('[notion.js] createPage 전체 결과:', result);
     return result;
   } catch (e) {
     console.error('[notion.js] createPage 에러:', e);
@@ -62,7 +45,6 @@ async function createPage(title, description, eventDate, imageUrl) {
 
 // ✅ 전체 페이지 최신순 조회
 async function getPages() {
-  logEnvAndEntry('getPages');
   const t0 = Date.now();
   try {
     const query = {
@@ -70,10 +52,7 @@ async function getPages() {
       sorts: [{ property: 'event_date', direction: 'descending' }],
       page_size: 10,
     };
-    console.log('[notion.js] getPages query:', query);
     const response = await notion.databases.query(query);
-    logTime('getPages Notion API', t0);
-    console.log('[notion.js] getPages 전체 결과:', response);
     return response.results;
   } catch (e) {
     console.error('[notion.js] getPages 에러:', e);
@@ -84,10 +63,6 @@ async function getPages() {
 // ✅ 요약 정보 조회
 async function getPagesSummary(topic) {
   const databaseId = getDatabaseId(topic);
-  console.log('topic:', topic);
-  console.log('NOTION_DATABASE_ID_NEWS:', process.env.NOTION_DATABASE_ID_NEWS);
-  console.log('NOTION_DATABASE_ID_EVENTS:', process.env.NOTION_DATABASE_ID_EVENTS);
-  logEnvAndEntry('getPagesSummary');
   const t0 = Date.now();
   try {
     const query = {
@@ -95,17 +70,13 @@ async function getPagesSummary(topic) {
       sorts: [{ property: 'event_date', direction: 'descending' }],
       page_size: 10,
     };
-    console.log('[notion.js] getPagesSummary query:', query);
     const response = await notion.databases.query(query);
-    logTime('getPagesSummary Notion API', t0);
     const summaries = response.results.map((page, idx) => {
       const title = page.properties.title?.title[0]?.text?.content || '';
       const eventDate = page.properties.event_date?.date?.start || null;
       const summary = { pageId: page.id, title, eventDate };
-      console.log(`[notion.js] getPagesSummary map[${idx}]:`, summary);
       return summary;
     });
-    console.log('[notion.js] getPagesSummary 전체 결과:', summaries);
     return summaries;
   } catch (e) {
     console.error('[notion.js] getPagesSummary 에러:', e);
@@ -116,12 +87,9 @@ async function getPagesSummary(topic) {
 // ✅ 단일 페이지 원본 조회
 async function getPageDetails(topic, pageId) {
   const databaseId = getDatabaseId(topic);
-  logEnvAndEntry('getPageDetails', { pageId });
   const t0 = Date.now();
   try {
     const result = await notion.pages.retrieve({ page_id: pageId });
-    logTime('getPageDetails Notion API', t0);
-    console.log('[notion.js] getPageDetails 전체 결과:', result);
     return result;
   } catch (e) {
     console.error('[notion.js] getPageDetails 에러:', e);
@@ -131,13 +99,9 @@ async function getPageDetails(topic, pageId) {
 
 // 텍스트 및 링크 추출
 async function getPageTextAndLinksOnly(topic, pageId) {
-  const databaseId = getDatabaseId(topic);
-  logEnvAndEntry('getPageTextAndLinksOnly', { pageId });
   const t0 = Date.now();
   try {
     const response = await notion.blocks.children.list({ block_id: pageId });
-    logTime('getPageTextAndLinksOnly Notion API', t0);
-    console.log('[notion.js] getPageTextAndLinksOnly blocks:', response.results);
     const items = [];
     for (const [i, block] of response.results.entries()) {
       const item = {};
@@ -193,10 +157,8 @@ async function getPageTextAndLinksOnly(topic, pageId) {
       // 유효한 데이터가 있을 경우에만 배열에 추가
       if (Object.keys(item).length > 0) {
         items.push(item);
-        console.log(`[notion.js] getPageTextAndLinksOnly items[${i}]:`, item);
       }
     }
-    console.log('[notion.js] getPageTextAndLinksOnly 전체 결과:', items);
     return items;
   } catch (e) {
     console.error('[notion.js] getPageTextAndLinksOnly 에러:', e);
@@ -205,36 +167,22 @@ async function getPageTextAndLinksOnly(topic, pageId) {
 }
 // ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
 async function getSimplePageDetails(topic, pageId) {
-  console.log('[notion.js] getSimplePageDetails topic:', topic);
-  const databaseId = getDatabaseId(topic);
-  console.log('topic:', topic);
-  console.log('databaseId:', databaseId);
-  logEnvAndEntry('getSimplePageDetails', { pageId });
-  const t0 = Date.now();
-  try {
-    const detail = await getPageDetails(topic, pageId);
-    console.log('[notion.js] getSimplePageDetails detail:', detail);  
-    logTime('getSimplePageDetails getPageDetails', t0);
-    const title = detail.properties.title?.title[0]?.text?.content || '';
-    const description = detail.properties.description?.rich_text[0]?.text?.content || '';
-    const eventDate = detail.properties.event_date?.date?.start || null;
+  const detail = await getPageDetails(topic, pageId);
+  const title = detail.properties.title?.title[0]?.text?.content || '';
+  const description = detail.properties.description?.rich_text[0]?.text?.content || '';
+  const eventDate = detail.properties.event_date?.date?.start || null;
 
-    const imageFile = detail.properties.image?.files?.[0];
-    let image = null;
+  const imageFile = detail.properties.image?.files?.[0];
+  let image = null;
 
-    if (imageFile?.type === 'external') {
-      image = imageFile.external.url;
-    } else if (imageFile?.type === 'file') {
-      image = imageFile.file.url;
-    }
-
-    const result = { title, description, eventDate, image };
-    console.log('[notion.js] getSimplePageDetails 전체 결과:', result);
-    return result;
-  } catch (e) {
-    console.error('[notion.js] getSimplePageDetails 에러:', e);
-    throw e;
+  if (imageFile?.type === 'external') {
+    image = imageFile.external.url;
+  } else if (imageFile?.type === 'file') {
+    image = imageFile.file.url;
   }
+
+  const result = { title, description, eventDate, image };
+  return result;
 }
 
 module.exports = {

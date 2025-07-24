@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
   }
 
   const topic = req.query.topic;
-  console.log('summary.js: topic =', topic); 
+  
 
   if (!topic) {
     res.status(400).json({ error: 'Missing topic parameter' });
