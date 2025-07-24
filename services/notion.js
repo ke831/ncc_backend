@@ -10,7 +10,7 @@ function getDatabaseId(topic) {
     case 'news':
       return process.env.NOTION_DATABASE_ID_NEWS;
     case 'weekly-bulletin':
-      return process.env.NOTION_DATABASE_ID_BULLETIN;
+      return process.env.NOTION_DATABASE_ID_EVENTS;
     default:
       throw new Error('Unknown topic');
   }
@@ -23,7 +23,6 @@ function logEnvAndEntry(fnName, args) {
   console.log(`[notion.js] 함수 진입: ${fnName}`);
   if (args) console.log(`[notion.js] 인자:`, args);
   console.log('[notion.js] NOTION_TOKEN:', process.env.NOTION_TOKEN ? process.env.NOTION_TOKEN.slice(0,4) + '...' : undefined);
-  console.log('[notion.js] NOTION_DATABASE_ID:', process.env.NOTION_DATABASE_ID_NEWS ? process.env.NOTION_DATABASE_ID_BULLETIN.slice(0,4) + '...' : undefined);
 }
 function logTime(label, start) {
   const end = Date.now();
@@ -84,6 +83,7 @@ async function getPages() {
 // ✅ 요약 정보 조회
 async function getPagesSummary(topic) {
   const databaseId = getDatabaseId(topic);
+  console.log('[notion.js] getPagesSummary databaseId:', databaseId);
   logEnvAndEntry('getPagesSummary');
   const t0 = Date.now();
   try {
