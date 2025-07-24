@@ -11,19 +11,28 @@ module.exports = async (req, res) => {
   }
 
   // 동적 파라미터(id)는 vercel.json에서 정규식 매핑 시 req.query[0]에 들어감
-  const id = req.query.id;
-  console.log('pages-id-details.js: id =', id);
+  const pageId = req.query.id;
+  console.log('pages-id-details.js: id =', pageId);
   console.log("req.url:", req.url);
   console.log("req.query:", req.query);
   console.log('NOTION_TOKEN:', process.env.NOTION_TOKEN ? process.env.NOTION_TOKEN.slice(0, 4) + '...' : 'undefined');
   console.log('NOTION_DATABASE_ID:', process.env.NOTION_DATABASE_ID ? process.env.NOTION_DATABASE_ID.slice(0, 4) + '...' : 'undefined');
+  const topic = req.query.topic;
+  console.log('summary.js: topic =', topic); 
 
   if (!id) {
     res.status(400).json({ error: 'Missing id parameter' });
     return;
   }
+
+  if (!topic) {
+    res.status(400).json({ error: 'Missing topic parameter' });
+    return;
+  }
+
+
   try {
-    const detail = await getSimplePageDetails(id);
+    const detail = await getSimplePageDetails(topic, pageId);
     res.status(200).json(detail);
   } catch (error) {
     res.status(500).json({ error: error.message });

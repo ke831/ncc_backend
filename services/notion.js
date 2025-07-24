@@ -5,7 +5,19 @@ const notion = new Client({
   notionVersion: '2022-06-28',
 });
 
-const databaseId = process.env.NOTION_DATABASE_ID;
+function getDatabaseId(topic) {
+  switch (topic) {
+    case 'news':
+      return process.env.NOTION_DATABASE_ID_NEWS;
+    case 'weekly-bulletin':
+      return process.env.NOTION_DATABASE_ID_EVENTS;
+    default:
+      throw new Error('Unknown topic');
+  }
+}
+
+
+
 
 function logEnvAndEntry(fnName, args) {
   console.log(`[notion.js] 함수 진입: ${fnName}`);
@@ -70,7 +82,8 @@ async function getPages() {
 }
 
 // ✅ 요약 정보 조회
-async function getPagesSummary() {
+async function getPagesSummary(topic) {
+  const databaseId = getDatabaseId(topic);
   logEnvAndEntry('getPagesSummary');
   const t0 = Date.now();
   try {
@@ -98,7 +111,8 @@ async function getPagesSummary() {
 }
 
 // ✅ 단일 페이지 원본 조회
-async function getPageDetails(pageId) {
+async function getPageDetails(topic, pageId) {
+  const databaseId = getDatabaseId(topic);
   logEnvAndEntry('getPageDetails', { pageId });
   const t0 = Date.now();
   try {
@@ -113,7 +127,8 @@ async function getPageDetails(pageId) {
 }
 
 // 텍스트 및 링크 추출
-async function getPageTextAndLinksOnly(pageId) {
+async function getPageTextAndLinksOnly(topic, pageId) {
+  const databaseId = getDatabaseId(topic);
   logEnvAndEntry('getPageTextAndLinksOnly', { pageId });
   const t0 = Date.now();
   try {
@@ -186,7 +201,8 @@ async function getPageTextAndLinksOnly(pageId) {
   }
 }
 // ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
-async function getSimplePageDetails(pageId) {
+async function getSimplePageDetails(topic, pageId) {
+  const databaseId = getDatabaseId(topic);
   logEnvAndEntry('getSimplePageDetails', { pageId });
   const t0 = Date.now();
   try {

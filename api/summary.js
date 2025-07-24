@@ -10,8 +10,16 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const topic = req.query.topic;
+  console.log('summary.js: topic =', topic); 
+
+  if (!topic) {
+    res.status(400).json({ error: 'Missing topic parameter' });
+    return;
+  }
+
   try {
-    const summaries = await getPagesSummary();
+    const summaries = await getPagesSummary(topic);
     res.status(200).json(summaries);
   } catch (error) {
     res.status(500).json({ error: error.message });
