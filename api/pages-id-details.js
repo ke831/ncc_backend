@@ -13,7 +13,8 @@ module.exports = async (req, res) => {
   // 동적 파라미터(id)는 vercel.json에서 정규식 매핑 시 req.query[0]에 들어감
   const id = req.query[0];
   console.log('pages-id-details.js: id =', id);
-  console.log('req.query:', req.query);
+  console.log("req.url:", req.url);
+  console.log("req.query:", req.query);
   console.log('NOTION_TOKEN:', process.env.NOTION_TOKEN ? process.env.NOTION_TOKEN.slice(0, 4) + '...' : 'undefined');
   console.log('NOTION_DATABASE_ID:', process.env.NOTION_DATABASE_ID ? process.env.NOTION_DATABASE_ID.slice(0, 4) + '...' : 'undefined');
 
