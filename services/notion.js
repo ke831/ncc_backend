@@ -203,6 +203,8 @@ async function getPageTextAndLinksOnly(topic, pageId) {
 // ✅ 간단 상세 정보 (텍스트 제외, 이미지 파일 처리 포함)
 async function getSimplePageDetails(topic, pageId) {
   const databaseId = getDatabaseId(topic);
+  console.log('topic:', topic);
+  console.log('databaseId:', databaseId);
   logEnvAndEntry('getSimplePageDetails', { pageId });
   const t0 = Date.now();
   try {
