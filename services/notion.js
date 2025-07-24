@@ -11,6 +11,8 @@ function getDatabaseId(topic) {
       return process.env.NOTION_DATABASE_ID_NEWS;
     case 'bulletin':
       return process.env.NOTION_DATABASE_ID_BULLETIN;
+    case 'heropage':
+      return process.env.NOTION_DATABASE_ID_HEROPAGE;
     default:
       throw new Error('Unknown topic');
   }
