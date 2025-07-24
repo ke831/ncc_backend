@@ -10,7 +10,7 @@ function getDatabaseId(topic) {
   switch (topic) {
     case 'news':
       return process.env.NOTION_DATABASE_ID_NEWS;
-    case 'weekly-bulletin':
+    case 'weekly-bulletin':``
       return process.env.NOTION_DATABASE_ID_EVENTS;
     default:
       throw new Error('Unknown topic');
@@ -212,7 +212,7 @@ async function getSimplePageDetails(topic, pageId) {
   logEnvAndEntry('getSimplePageDetails', { pageId });
   const t0 = Date.now();
   try {
-    const detail = await getPageDetails(pageId);
+    const detail = await getPageDetails(topic, pageId);
     console.log('[notion.js] getSimplePageDetails detail:', detail);  
     logTime('getSimplePageDetails getPageDetails', t0);
     const title = detail.properties.title?.title[0]?.text?.content || '';
