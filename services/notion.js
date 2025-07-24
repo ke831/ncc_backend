@@ -213,6 +213,7 @@ async function getSimplePageDetails(topic, pageId) {
   const t0 = Date.now();
   try {
     const detail = await getPageDetails(pageId);
+    console.log('[notion.js] getSimplePageDetails detail:', detail);  
     logTime('getSimplePageDetails getPageDetails', t0);
     const title = detail.properties.title?.title[0]?.text?.content || '';
     const description = detail.properties.description?.rich_text[0]?.text?.content || '';
